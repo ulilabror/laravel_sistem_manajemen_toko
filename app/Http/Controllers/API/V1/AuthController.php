@@ -49,12 +49,13 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password, 'role' => $request->role];
+        $data = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password, 'phone'=>$request->phone,'role_id' => $request->role_id];
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|min:9',
             'password' => 'required|string|min:6',
-            'role' => 'required|string'
+            'role_id' => 'required|exists:roles,id',
         ]);
 
         if ($validator->fails()) {
@@ -65,7 +66,8 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role_id' => $request->role_id,
+            'phone' => $request->phone
         ]);
 
         return response()->json([
