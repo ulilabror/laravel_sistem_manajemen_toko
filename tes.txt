@@ -11,3 +11,4 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin https://github.com/ulilabror/laravel_sistem_manajemen_toko.git
 git push -u origin main
+
