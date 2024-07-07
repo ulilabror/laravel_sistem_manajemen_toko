@@ -1,3 +1,9 @@
+composer update
+
+php artisan jwt:secret
+
+
+
 echo "# laravel_sistem_manajemen_toko" >> README.md
 git init
 git add README.md
