@@ -27,15 +27,19 @@ Route::controller(AuthController::class)->group(function () {
 
 
 
-Route::prefix('users')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::get('{id}', [UserController::class, 'show']);
-    Route::post('/', [UserController::class, 'store']);
-    Route::put('{id}', [UserController::class, 'update']);
-    Route::delete('{id}', [UserController::class, 'destroy']);
+Route::prefix('users')->middleware(['auth:api'])->group(function () {
 
-    Route::get('{id}/points', [UserController::class, 'points']);
-    Route::get('{id}/files', [UserController::class, 'files']);
-    Route::get('{id}/transactions', [UserController::class, 'transactions']);
+    Route::middleware(['auth.role:Admin'])->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('{id}', [UserController::class, 'show']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('{id}', [UserController::class, 'update']);
+        Route::delete('{id}', [UserController::class, 'destroy']);
+    });
+
+    Route::middleware(['auth.role:Admin,Manager'])->group(function () {
+        Route::get('{id}/points', [UserController::class, 'points']);
+        Route::get('{id}/files', [UserController::class, 'files']);
+        Route::get('{id}/transactions', [UserController::class, 'transactions']);
+    });
 });
-
