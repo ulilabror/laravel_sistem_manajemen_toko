@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\UserController;
+use App\Http\Controllers\API\V1\RoleController;
+
 
 Route::get('products', ['middleware' => 'auth.role:admin,user', 'uses' => 'ProductController@index', 'as' => 'products']);
 Route::controller(AuthController::class)->group(function () {
@@ -42,4 +44,15 @@ Route::prefix('users')->middleware(['auth:api'])->group(function () {
         Route::get('{id}/files', [UserController::class, 'files']);
         Route::get('{id}/transactions', [UserController::class, 'transactions']);
     });
+});
+
+
+
+Route::prefix('roles')->group(function () {
+    Route::middleware(['auth.role:Admin']);
+    Route::get('/', [RoleController::class, 'index']);
+    Route::post('/', [RoleController::class, 'store']);
+    Route::get('{id}', [RoleController::class, 'show']);
+    Route::put('{id}', [RoleController::class, 'update']);
+    Route::delete('{id}', [RoleController::class, 'destroy']);
 });

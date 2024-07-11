@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         $this->call([
-            // RoleSeeder::class, // Make sure you have a RoleSeeder or similar to create roles
-            // UserSeeder::class,
+            RoleSeeder::class, // Make sure you have a RoleSeeder or similar to create roles
+            UserSeeder::class,
             // TransactionSeeder::class,
         ]);
     }

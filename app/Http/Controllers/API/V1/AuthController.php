@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password, 'phone'=>$request->phone,'role_id' => $request->role_id];
+        $data = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password, 'phone' => $request->phone, 'role_id' => $request->role_id];
         $validator = Validator::make($data, [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -72,7 +72,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user
+            'user' => new UserResource($user)
         ]);
     }
 
