@@ -7,15 +7,14 @@ on:
     branches: [ "main" ]
 
 jobs:
-  laravel-tests:
-
+  laravel-tests-ubuntu:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+    - uses: actions/checkout@v4
+    - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.1'
-    - uses: actions/checkout@v4
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
@@ -30,6 +29,32 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
+    - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
+
+  laravel-tests-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+    - name: Copy .env
+      run: powershell -Command "if (-Not (Test-Path '.env')) { Copy-Item '.env.example' '.env' }"
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Generate key
+      run: php artisan key:generate
+    - name: Generate Jwt key
+      run: php artisan jwt:secret
+    - name: Create Database
+      run: |
+        mkdir database
+        New-Item database/database.sqlite -ItemType File
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
