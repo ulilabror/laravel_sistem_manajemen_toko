@@ -49,6 +49,7 @@ jobs:
       run: powershell -Command "if (-Not (Test-Path '.env')) { Copy-Item '.env.example' '.env' }"
     - name: Install Dependencies
       run: |
+        composer self-update --1
         composer update -q --no-ansi --no-interaction --no-progress --prefer-dist
         composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Generate key
