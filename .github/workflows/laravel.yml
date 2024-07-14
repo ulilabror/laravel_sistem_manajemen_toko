@@ -58,9 +58,7 @@ jobs:
     - name: Generate Jwt key
       run: php artisan jwt:secret
     - name: Create Database
-      run: |
-        mkdir database
-        New-Item database/database.sqlite -ItemType File
+      run: New-Item database/database.sqlite -ItemType File
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
