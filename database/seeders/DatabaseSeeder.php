@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -21,9 +23,11 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
         $this->call([
-            RoleSeeder::class, // Make sure you have a RoleSeeder or similar to create roles
+            // RoleSeeder::class, // Make sure you have a RoleSeeder or similar to create roles
             UserSeeder::class,
+            ProductSeeder::class,
             // TransactionSeeder::class,
+            // FileSeeder::class
         ]);
     }
 }

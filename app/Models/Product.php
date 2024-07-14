@@ -10,6 +10,27 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_name', 'product_type', 'product_description', 'price'
+        'product_name',
+        'product_type',
+        'product_sku',
+        'product_description',
+        'price',
+        'created_by',
     ];
+
+    /**
+     * Get the user that created the product.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get all of the files for the product.
+     */
+    public function files()
+    {
+        return $this->morphMany(File::class, 'related');
+    }
 }

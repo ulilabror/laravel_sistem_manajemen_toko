@@ -10,10 +10,20 @@ class File extends Model
     use HasFactory;
 
     protected $fillable = [
-        'file_name', 'file_path', 'uploaded_by'
+        'filename', 'path', 'uploaded_by', 'related_id', 'related_type'
     ];
 
-    public function user()
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class, 'uploaded_by');
+    // }
+
+    public function related()
+    {
+        return $this->morphTo();
+    }
+
+    public function uploadedBy()
     {
         return $this->belongsTo(User::class, 'uploaded_by');
     }

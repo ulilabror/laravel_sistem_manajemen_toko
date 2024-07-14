@@ -16,28 +16,35 @@ class RoleAuthorization
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param  string  $accessRight
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, $accessRight)
     {
         try {
-            //Access token from the request        
+            // Access token from the request
             $token = JWTAuth::parseToken();
-            //Try authenticating user       
+            // Try authenticating user
             $user = $token->authenticate();
         } catch (TokenExpiredException $e) {
-            //Thrown if token has expired        
+            // Thrown if token has expired
             return $this->unauthorized('Your token has expired. Please, login again.');
         } catch (TokenInvalidException $e) {
-            //Thrown if token invalid
+            // Thrown if token invalid
             return $this->unauthorized('Your token is invalid. Please, login again.');
         } catch (JWTException $e) {
-            //Thrown if token was not found in the request.
+            // Thrown if token was not found in the request
             return $this->unauthorized('Please, attach a Bearer Token to your request');
         }
-        //If user was authenticated successfully and user is in one of the acceptable roles, send to next request.
-        if ($user && in_array($user->role->role_name, $roles)) {
-            return $next($request);
+
+        if ($user) {
+            // Check user's role for access rights
+            $role = $user->role;
+            $roleAccessRights = json_decode($role->access_rights, true);
+
+            if (in_array($accessRight, $roleAccessRights)) {
+                return $next($request);
+            }
         }
 
         return $this->unauthorized();
