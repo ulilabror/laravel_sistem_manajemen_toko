@@ -56,10 +56,11 @@ class ProductSeeder extends Seeder
                 foreach ($files as $file) {
                     $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('public/files', $filename);
-
+                    $url = url(Storage::url($path));
                     $product->files()->create([
                         'filename' => $filename,
                         'path' => $path,
+                        'url' => $url,
                         'uploaded_by' => $user->id,
                         'related_id' => $product->id,
                         'related_type' => Product::class,

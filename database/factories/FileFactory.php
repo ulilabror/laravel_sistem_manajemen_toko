@@ -6,6 +6,8 @@ use App\Models\File;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class FileFactory extends Factory
 {
@@ -13,12 +15,22 @@ class FileFactory extends Factory
 
     public function definition()
     {
+        // Generating a unique file name
+        $filename = Str::uuid() . '.' . $this->faker->fileExtension;
+
+        // Generating a storage path
+        $path = 'public/files/' . $filename;
+
+        // Generating a full URL
+        $fullUrl = url(Storage::url($path));
+
         return [
-            'filename' => $this->faker->word . '.' . $this->faker->fileExtension,
-            'path' => 'public/files/' . $this->faker->word . '.' . $this->faker->fileExtension,
+            'filename' => $filename,
+            'path' => $path,
+            'url' => $fullUrl,
             'uploaded_by' => User::factory(),
             'related_id' => Product::factory(),
-            'related_type' => Product::factory(),
+            'related_type' => Product::class,
         ];
     }
 }

@@ -13,13 +13,17 @@ class TransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => new UserResource($this->user),
+            'user_id' => $this->user_id,
+            'product_id' => $this->product_id,
             'transaction_type' => $this->transaction_type,
             'payment_method' => $this->payment_method,
-            'transaction_date' => $this->transaction_date->toIso8601String(),
+            'payment_id' => $this->payment_id,
+            'transaction_date' => $this->transaction_date,
             'amount' => $this->amount,
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'quantity' => $this->quantity,
+            'product_price' => $this->product->price,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

@@ -8,46 +8,56 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use App\Models\Product;
 
 class RoleAuthorization
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @param  string  $accessRight
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
-    public function handle(Request $request, Closure $next, $accessRight)
+    public function handle(Request $request, Closure $next, $accessRight, $resourceType = null)
     {
         try {
-            // Access token from the request
             $token = JWTAuth::parseToken();
-            // Try authenticating user
             $user = $token->authenticate();
         } catch (TokenExpiredException $e) {
-            // Thrown if token has expired
             return $this->unauthorized('Your token has expired. Please, login again.');
         } catch (TokenInvalidException $e) {
-            // Thrown if token invalid
             return $this->unauthorized('Your token is invalid. Please, login again.');
         } catch (JWTException $e) {
-            // Thrown if token was not found in the request
             return $this->unauthorized('Please, attach a Bearer Token to your request');
         }
 
         if ($user) {
-            // Check user's role for access rights
             $role = $user->role;
             $roleAccessRights = json_decode($role->access_rights, true);
 
             if (in_array($accessRight, $roleAccessRights)) {
+                if ($resourceType) {
+                    $resourceId = $request->route('id');
+                    if (!$this->checkOwnership($user, $resourceType, $resourceId)) {
+                        return $this->unauthorized('You do not own this resource');
+                    }
+                }
                 return $next($request);
             }
         }
 
         return $this->unauthorized();
+    }
+
+    private function checkOwnership($user, $resourceType, $resourceId)
+    {
+        switch ($resourceType) {
+            case 'product':
+                $resource = Product::find($resourceId);
+                break;
+            default:
+                return false;
+        }
+
+        if ($resource && $resource->created_by === $user->id) {
+            return true;
+        }
+
+        return false;
     }
 
     private function unauthorized($message = null)

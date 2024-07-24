@@ -30,19 +30,21 @@ class AuthControllerTest extends TestCase
             'phone' => '123456789',
             'role_id' =>  Role::inRandomOrder()->first()->id,
         ]);
-
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJsonStructure([
-                'message',
-                'user' => [
+                'status',
+                'data' => [
                     'id',
                     'name',
                     'email',
+                    'email_verified_at',
                     'phone',
                     'role',
                     'created_at',
                     'updated_at'
                 ],
+                'message',
+                'errors'
             ]);
     }
 
@@ -68,19 +70,25 @@ class AuthControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                    'phone',
-                    'role',
-                    'created_at',
-                    'updated_at'
+                'status',
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                        'email_verified_at',
+                        'phone',
+                        'role',
+                        'created_at',
+                        'updated_at'
+                    ],
+                    'authorization' => [
+                        'token',
+                        'type'
+                    ]
                 ],
-                'authorization' => [
-                    'token',
-                    'type'
-                ]
+                'message',
+                'errors'
             ]);
     }
 
@@ -116,21 +124,28 @@ class AuthControllerTest extends TestCase
 
         $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])->postJson('/api/refresh');
 
+
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                    'phone',
-                    'role',
-                    'created_at',
-                    'updated_at'
+                'status',
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                        'email_verified_at',
+                        'phone',
+                        'role',
+                        'created_at',
+                        'updated_at'
+                    ],
+                    'authorization' => [
+                        'token',
+                        'type'
+                    ]
                 ],
-                'authorisation' => [
-                    'token',
-                    'type'
-                ]
+                'message',
+                'errors'
             ]);
     }
 }

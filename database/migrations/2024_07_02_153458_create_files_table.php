@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('filename');
             $table->string('path');
+            $table->string('url');
             $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
             $table->unsignedBigInteger('related_id');
             $table->string('related_type');

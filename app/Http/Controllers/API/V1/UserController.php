@@ -19,7 +19,7 @@ class UserController extends Controller
             $user = User::with(['role', 'points', 'files', 'transactions'])->findOrFail($id);
             return new UserResource($user);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'User not found'], 404);
+            return new UserResource(null);
         }
     }
 

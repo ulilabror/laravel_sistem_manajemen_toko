@@ -32,7 +32,24 @@ class FileTest extends TestCase
         $response = $this->getJson('/api/files');
 
         $response->assertStatus(200)
-            ->assertJsonCount(10);
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'filename',
+                        'path',
+                        'url',
+                        'uploaded_by',
+                        'related_id',
+                        'related_type',
+                        'created_at',
+                        'updated_at',
+                    ]
+                ],
+                'message',
+            ])
+            ->assertJsonCount(10, 'data');
     }
 
     public function test_can_create_file()
@@ -40,10 +57,10 @@ class FileTest extends TestCase
         Storage::fake('public');
 
         $product = Product::factory()->create();
-
+        $files = [UploadedFile::fake()->image('product_image.jpg'), UploadedFile::fake()->image('product_image.jpg')];
         $response = $this->postJson('/api/files', [
             'filename' => 'product_image.jpg',
-            'path' => UploadedFile::fake()->image('product_image.jpg'),
+            'files' => $files,
             'uploaded_by' => $this->user->id,
             'related_id' => $product->id,
             'related_type' => 'App\Models\Product',
@@ -51,21 +68,28 @@ class FileTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'message',
-                'file' => [
-                    'id',
-                    'filename',
-                    'path',
-                    'uploaded_by',
-                    'related_id',
-                    'related_type',
-                    'created_at',
-                    'updated_at',
+                'status',
+                'data' => [
+                    '*' => [
+                        'id',
+                        'filename',
+                        'path',
+                        'url',
+                        'uploaded_by',
+                        'related_id',
+                        'related_type',
+                        'created_at',
+                        'updated_at',
+                    ]
                 ],
+                'message',
             ]);
 
-        $filePath = str_replace('public/', '', $response->json('file.path'));
-        $this->assertFileExists(storage_path('app/public/' . $filePath));
+        foreach ($response->json('data') as $file) {
+            $filePath = str_replace('public/', '', $file['path']);
+            // print($file['path']);
+            $this->assertFileExists(storage_path('app/' . $file['path']));
+        }
     }
 
     public function test_can_show_file()
@@ -75,6 +99,21 @@ class FileTest extends TestCase
         $response = $this->getJson('/api/files/' . $file->id);
 
         $response->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'id',
+                    'filename',
+                    'path',
+                    'url',
+                    'uploaded_by',
+                    'related_id',
+                    'related_type',
+                    'created_at',
+                    'updated_at',
+                ],
+                'message',
+            ])
             ->assertJsonFragment([
                 'filename' => $file->filename,
             ]);
@@ -91,11 +130,26 @@ class FileTest extends TestCase
         $response = $this->putJson('/api/files/' . $file->id, $updatedData);
 
         $response->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    'id',
+                    'filename',
+                    'path',
+                    'url',
+                    'uploaded_by',
+                    'related_id',
+                    'related_type',
+                    'created_at',
+                    'updated_at',
+                ],
+                'message',
+            ])
             ->assertJsonFragment([
                 'filename' => $updatedData['filename'],
             ]);
 
-        $this->assertDatabaseHas('files', $updatedData);
+        $this->assertDatabaseHas('files', ['filename' => $updatedData['filename']]);
     }
 
     public function test_can_delete_file()
@@ -105,6 +159,10 @@ class FileTest extends TestCase
         $response = $this->deleteJson('/api/files/' . $file->id);
 
         $response->assertStatus(200)
+            ->assertJsonStructure([
+                'status',
+                'message',
+            ])
             ->assertJsonFragment([
                 'message' => 'File deleted successfully',
             ]);

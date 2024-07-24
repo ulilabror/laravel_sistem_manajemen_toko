@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('product_name');
+            $table->string('product_name')->unique();
             $table->string('product_type');
-            $table->string('product_sku');
+            $table->string('product_sku')->unique();
+            $table->string('product_label')->nullable();
             $table->text('product_description');
+            $table->string('product_barcode_id')->nullable()->unique();
             $table->integer('price');
             $table->unsignedBigInteger('created_by'); // Add this line
             $table->timestamps();

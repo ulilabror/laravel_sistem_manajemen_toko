@@ -19,7 +19,7 @@ use App\Http\Controllers\API\V1\UserController;
 use App\Http\Controllers\API\V1\RoleController;
 use App\Http\Controllers\API\V1\FileController;
 use App\Http\Controllers\API\V1\ProductController;
-
+use App\Http\Controllers\API\V1\TransactionController;
 
 // Route::get('products', ['middleware' => 'auth.role:admin,user', 'uses' => 'ProductController@index', 'as' => 'products']);
 Route::controller(AuthController::class)->group(function () {
@@ -76,6 +76,17 @@ Route::prefix('products')->middleware(['auth:api'])->group(function () {
     Route::get('/', [ProductController::class, 'index']);
     Route::get('{id}', [ProductController::class, 'show']);
 });
+
+
+
+Route::prefix('transactions')->middleware(['auth:api'])->group(function () {
+    Route::post('/', [TransactionController::class, 'store']);
+    Route::put('{id}', [TransactionController::class, 'update']);
+    Route::delete('{id}', [TransactionController::class, 'destroy']);
+    Route::get('/', [TransactionController::class, 'index']);
+    Route::get('{id}', [TransactionController::class, 'show']);
+});
+
 
 // <?php
 
