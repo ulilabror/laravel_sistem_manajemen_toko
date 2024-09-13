@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Role;
 
+
 class UserSeeder extends Seeder
 {
     /**
@@ -17,8 +18,13 @@ class UserSeeder extends Seeder
     public function run()
     {
         // Ensure that we have roles to associate users with
-        Role::factory()->create();
+        // Role::factory()->create();
         User::factory()->create();
+        // User::factory()->create([
+        //     'email' => 'admin@carisini.my.id',
+        //     'password' => Hash::make('123456'), // Password yang dienkripsi
+        //     'role_id' => Role::factory()->create(['role_name' => 'Admin'])->id, // Buat role "Admin" jika belum ada, dan ambil id-nya
+        // ]);
 
         // // Create 10 sample users
         // for ($i = 0; $i < 10; $i++) {

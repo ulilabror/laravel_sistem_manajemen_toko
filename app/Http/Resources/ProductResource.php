@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'product_description' => $this->product_description,
             'product_price' => $this->product_description,
             'price' => $this->price,
+            'created_by' => $this->creator->name,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'files' =>  FileResource::collection($this->whenLoaded('files')),

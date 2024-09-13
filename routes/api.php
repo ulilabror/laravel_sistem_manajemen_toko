@@ -68,11 +68,12 @@ Route::prefix('files')->middleware(['auth:api'])->group(function () {
     Route::put('{id}', [FileController::class, 'update']);
 });
 
-Route::prefix('products')->middleware(['auth:api'])->group(function () {
-
-    Route::post('/', [ProductController::class, 'store']);
-    Route::put('{id}', [ProductController::class, 'update']);
-    Route::delete('{id}', [ProductController::class, 'destroy']);
+Route::prefix('products')->group(function () {
+    Route::middleware(['auth:api'])->group(function () {
+        Route::post('/', [ProductController::class, 'store']);
+        Route::put('{id}', [ProductController::class, 'update']);
+        Route::delete('{id}', [ProductController::class, 'destroy']);
+    });
     Route::get('/', [ProductController::class, 'index']);
     Route::get('{id}', [ProductController::class, 'show']);
 });

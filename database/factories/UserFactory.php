@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => Hash::make('password'), // Default password for testing
             'remember_token' => Str::random(10),
-            'role_id' => Role::inRandomOrder()->first()->id, // You can set a default role id or make it dynamic
+            'role_id' => Role::factory()->create()->id, // You can set a default role id or make it dynamic
             'phone' => $this->faker->phoneNumber,
         ];
     }
@@ -46,7 +46,7 @@ class UserFactory extends Factory
      */
     public function unverified()
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

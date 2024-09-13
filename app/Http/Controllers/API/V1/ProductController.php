@@ -13,11 +13,48 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = Product::with('files')->get();
-            return new BaseResource(true, $products, 'Products retrieved successfully', null);
+            // Get query parameters
+            $search = $request->query('search');
+            $label = $request->query('label');
+            $type = $request->query('type');
+            $perPage = $request->query('per_page', 12); // Default items per page
+
+            // Build query
+            $query = Product::with('files', 'creator');
+
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('product_name', 'like', "%$search%")
+                        ->orWhere('product_description', 'like', "%$search%")
+                        ->orWhere('product_sku', 'like', "%$search%");
+                });
+            }
+
+            if ($label) {
+                $query->where('product_label', $label);
+            }
+
+            if ($type) {
+                $query->where('product_type', $type);
+            }
+
+            // Execute query with pagination
+            $products = $query->paginate($perPage);
+
+            return new BaseResource(true, [
+                'products' => ProductResource::collection($products),
+                'pagination' => [
+                    'total' => $products->total(),
+                    'per_page' => $products->perPage(),
+                    'current_page' => $products->currentPage(),
+                    'total_pages' => $products->lastPage(),
+                    'next_page_url' => $products->nextPageUrl(),
+                    'prev_page_url' => $products->previousPageUrl(),
+                ],
+            ], 'Products retrieved successfully', null);
         } catch (\Exception $e) {
             return new BaseResource(false, null, 'Failed to retrieve products', $e->getMessage());
         }
@@ -41,8 +78,14 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->only([
-            'product_name', 'product_type', 'product_label', 'product_barcode_id',
-            'product_sku', 'product_description', 'price', 'files'
+            'product_name',
+            'product_type',
+            'product_label',
+            'product_barcode_id',
+            'product_sku',
+            'product_description',
+            'price',
+            'files'
         ]), [
             'product_name' => 'required|string|max:255',
             'product_type' => 'required|string|max:255',
@@ -111,8 +154,14 @@ class ProductController extends Controller
         }
 
         $validator = Validator::make($request->only([
-            'product_name', 'product_type', 'product_label', 'product_barcode_id',
-            'product_sku', 'product_description', 'price', 'files'
+            'product_name',
+            'product_type',
+            'product_label',
+            'product_barcode_id',
+            'product_sku',
+            'product_description',
+            'price',
+            'files'
         ]), [
             'product_name' => 'required|string|max:255',
             'product_type' => 'required|string|max:255',

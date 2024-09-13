@@ -30,30 +30,38 @@ class ProductControllerTest extends TestCase
     /** @test */
     public function it_can_list_products()
     {
-        Product::factory()->count(3)->create();
-        $response = $this->getJson('/api/products');
+        Product::factory()->count(20)->create();
+        $response = $this->getJson('/api/products?per_page=20');
+        print_r($response->json());
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'status',
                 'data' => [
-                    '*' => [
-                        'id',
-                        'product_name',
-                        'product_type',
-                        'product_sku',
-                        'product_label',
-                        'product_description',
-                        'product_barcode_id',
-                        'price',
-                        'created_by',
-                        'created_at',
-                        'updated_at',
-                        'files' => [],
+
+                    'products' => [
+
+                        '*' => [
+                            'id',
+                            'product_name',
+                            'product_type',
+                            'product_sku',
+                            'product_label',
+                            'product_description',
+                            'product_barcode_id',
+                            'price',
+                            'created_by',
+                            'created_at',
+                            'updated_at',
+                            'files' => [],
+                        ],
                     ],
+                    'pagination'
+
+
                 ],
                 'message',
                 'errors',
-            ])->assertJsonCount(3, 'data');
+            ])->assertJsonCount(20, 'data.products');
     }
 
     /** @test */

@@ -68,6 +68,8 @@ class AuthControllerTest extends TestCase
             'password' => 'password',
         ]);
 
+        print_r($response->json());
+
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'status',
